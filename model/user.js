@@ -4,11 +4,11 @@ const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      require: [true, "Name must be provided"],
+      required: [true, "Name must be provided"],
     },
     email: {
       type: String,
-      require: [true, "Email must be provided"],
+      required: [true, "Email must be provided"],
       match: [
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
         "Please provide a valid email",
@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      require: [true, "Password must be provided"],
+      required: [true, "Password must be provided"],
       minLength: 6,
     },
   },
