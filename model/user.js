@@ -6,6 +6,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       required: [true, "Name must be provided"],
     },
+
     email: {
       type: String,
       required: [true, "Email must be provided"],
@@ -21,6 +22,10 @@ const UserSchema = new mongoose.Schema(
       required: [true, "Password must be provided"],
       minLength: 6,
     },
+
+    profile_picture: String,
+
+    cover_picture: String,
   },
   { timestamps: true }
 );
