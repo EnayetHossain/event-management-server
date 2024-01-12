@@ -26,7 +26,7 @@ const signIn = async (req, res) => {
 
     // generate token
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "2d",
+      expiresIn: process.env.TOKEN_EXPIRES_IN,
     });
 
     res.status(200).json({ status: "Success", token });
@@ -57,7 +57,7 @@ const signUp = async (req, res) => {
     const user = await User.create({ name, email, password: hashedPassword });
     // generate token
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "2d",
+      expiresIn: process.env.TOKEN_EXPIRES_IN,
     });
 
     res.status(201).json({ status: "Success", token });
@@ -97,7 +97,9 @@ const changePassword = async (req, res) => {
     // filed to be updated
     const updateDoc = { password: hashedPassword };
     // update the field
-    const doc = await User.findOneAndUpdate(filter, updateDoc, { new: true });
+    const doc = await User.findOneAndUpdate(filter, updateDoc, {
+      new: true,
+    }).select("-password");
 
     if (!doc) {
       return res
