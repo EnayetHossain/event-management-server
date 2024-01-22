@@ -23,9 +23,9 @@ const UserSchema = new mongoose.Schema(
       minLength: 6,
     },
 
-    profile_picture: String,
+    profilePhoto: String,
 
-    cover_picture: String,
+    coverPhoto: String,
   },
   { timestamps: true }
 );
