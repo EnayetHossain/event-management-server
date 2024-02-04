@@ -23,9 +23,16 @@ const UserSchema = new mongoose.Schema(
       minLength: 6,
     },
 
-    profilePhoto: String,
+    profilePhoto: {
+      type: String,
+      default:
+        "https://cdn.dribbble.com/users/760319/screenshots/3907189/man.png?resize=400x0",
+    },
 
-    coverPhoto: String,
+    coverPhoto: {
+      type: String,
+      default: "https://www.color-hex.com/palettes/29882.png",
+    },
   },
   { timestamps: true }
 );

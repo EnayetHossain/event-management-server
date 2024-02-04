@@ -26,6 +26,11 @@ const eventSchema = new mongoose.Schema(
       type: Number,
       required: [true, "Total tickets are required"],
     },
+
+    eventLocation: {
+      type: String,
+      required: [true, "Event location is required"],
+    },
   },
   { timestamps: true }
 );
