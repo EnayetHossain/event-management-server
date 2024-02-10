@@ -10,10 +10,12 @@ router.route("/sign-up").post(
     {
       name: "profilePhoto",
       maxCount: 1,
+      optional: true,
     },
     {
       name: "coverPhoto",
       maxCount: 1,
+      optional: true,
     },
   ]),
   signUp

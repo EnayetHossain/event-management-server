@@ -25,13 +25,13 @@ const UserSchema = new mongoose.Schema(
 
     profilePhoto: {
       type: String,
-      default:
-        "https://cdn.dribbble.com/users/760319/screenshots/3907189/man.png?resize=400x0",
+      // default:
+      //   "https://cdn.dribbble.com/users/760319/screenshots/3907189/man.png?resize=400x0",
     },
 
     coverPhoto: {
       type: String,
-      default: "https://www.color-hex.com/palettes/29882.png",
+      // default: "https://www.color-hex.com/palettes/29882.png",
     },
   },
   { timestamps: true }

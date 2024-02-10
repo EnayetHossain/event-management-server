@@ -16,6 +16,7 @@ const uploadOnCloudinary = async (filePath) => {
       resource_type: "auto",
     });
 
+    fs.unlinkSync(filePath);
     return response;
   } catch (error) {
     fs.unlinkSync(filePath);
@@ -23,4 +24,4 @@ const uploadOnCloudinary = async (filePath) => {
   }
 };
 
-module.exports = uploadOnCloudinary;
+module.exports = { uploadOnCloudinary };

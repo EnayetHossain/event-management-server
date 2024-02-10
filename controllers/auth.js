@@ -4,6 +4,7 @@ const CustomError = require("../error/customError");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
+const { uploadOnCloudinary } = require("../utils/cloudinary");
 
 // login user
 const signIn = async (req, res) => {
@@ -38,6 +39,7 @@ const signIn = async (req, res) => {
 // register the user.
 const signUp = async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
+  console.log(name, email, password, confirmPassword);
   const result = await User.findOne({ email });
 
   if (result) throw new CustomError("User already exists with this email", 403);
@@ -48,13 +50,31 @@ const signUp = async (req, res) => {
   if (password !== confirmPassword)
     throw new CustomError("Password and confirm password doesn't match", 403);
 
+  const profilePhotoPath = req.files?.profilePhoto?.[0]?.path;
+  const coverPhotoPath = req.files?.coverPhoto?.[0]?.path;
+
+  const profilePhoto = await uploadOnCloudinary(profilePhotoPath);
+  const coverPhoto = await uploadOnCloudinary(coverPhotoPath);
+
   try {
     // generate salt for password
     const salt = await bcrypt.genSalt(12);
     // hash the password
     const hashedPassword = await bcrypt.hash(password, salt);
     // create a user on the database
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+      profilePhoto:
+        profilePhoto?.url ||
+        "https://cdn.dribbble.com/users/760319/screenshots/3907189/man.png?resize=400x0",
+      coverPhoto:
+        coverPhoto?.url || "https://www.color-hex.com/palettes/29882.png",
+    });
+
+    // send user with response
+    // const createdUser = User.findById(user._id).select("-password");
     // generate token
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: process.env.TOKEN_EXPIRES_IN,
