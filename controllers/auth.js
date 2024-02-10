@@ -66,11 +66,8 @@ const signUp = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      profilePhoto:
-        profilePhoto?.url ||
-        "https://cdn.dribbble.com/users/760319/screenshots/3907189/man.png?resize=400x0",
-      coverPhoto:
-        coverPhoto?.url || "https://www.color-hex.com/palettes/29882.png",
+      profilePhoto: profilePhoto?.url,
+      coverPhoto: coverPhoto?.url,
     });
 
     // send user with response
