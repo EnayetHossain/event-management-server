@@ -30,7 +30,7 @@ const signIn = async (req, res) => {
       expiresIn: process.env.TOKEN_EXPIRES_IN,
     });
 
-    res.status(200).json({ status: "Success", token });
+    res.status(200).json({ status: "Success", token, user: user.email });
   } catch (error) {
     res.status(400).json({ status: "Failed", error });
   }
@@ -39,7 +39,6 @@ const signIn = async (req, res) => {
 // register the user.
 const signUp = async (req, res) => {
   const { name, email, password, confirmPassword } = req.body;
-  console.log(name, email, password, confirmPassword);
   const result = await User.findOne({ email });
 
   if (result) throw new CustomError("User already exists with this email", 403);
@@ -71,13 +70,13 @@ const signUp = async (req, res) => {
     });
 
     // send user with response
-    // const createdUser = User.findById(user._id).select("-password");
+    const createdUser = await User.findById(user._id).select("-password");
     // generate token
     const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: process.env.TOKEN_EXPIRES_IN,
     });
 
-    res.status(201).json({ status: "Success", token });
+    res.status(201).json({ status: "Success", token, user: createdUser.email });
   } catch (error) {
     console.log(error);
     res.status(400).json({ status: "Failed", error });

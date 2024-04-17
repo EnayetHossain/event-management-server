@@ -31,6 +31,17 @@ const eventSchema = new mongoose.Schema(
       type: String,
       required: [true, "Event location is required"],
     },
+
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: [true, "User id is required"],
+    },
+
+    eventPhoto: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true }
 );
