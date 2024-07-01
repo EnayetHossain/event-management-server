@@ -51,6 +51,32 @@ const addEvent = async (req, res) => {
   }
 };
 
+const getAllEvents = async (req, res) => {
+  try {
+    const events = await Event.find({}); // get all events.
+    res.status(200).json({ status: "Success", data: events });
+  } catch (error) {
+    res.status(500).json({ status: "Failed", error });
+  }
+};
+
+const getEventByUserId = async (req, res) => {
+  const userId = req.decoded._id;
+
+  try {
+    // find all data with same user Id
+    const event = await Event.find({ userId });
+
+    if (event.data === null) throw new CustomError("No event found", 404);
+
+    res.status(200).json({ status: "Success", data: event });
+  } catch (error) {
+    res.status(500).json({ status: "Failed", error });
+  }
+};
+
 module.exports = {
   addEvent,
+  getAllEvents,
+  getEventByUserId,
 };

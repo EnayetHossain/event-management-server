@@ -1,5 +1,9 @@
 const express = require("express");
-const { addEvent } = require("../controllers/events");
+const {
+  addEvent,
+  getAllEvents,
+  getEventByUserId,
+} = require("../controllers/events");
 const verifyJWT = require("../middlewares/verifyJWT");
 const upload = require("../middlewares/multer");
 
@@ -16,5 +20,8 @@ router.route("/").post(
   ]),
   addEvent
 );
+
+router.route("/").get(getAllEvents);
+router.route("/getEventByUser").get(verifyJWT, getEventByUserId);
 
 module.exports = router;

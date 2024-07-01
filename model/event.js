@@ -32,6 +32,16 @@ const eventSchema = new mongoose.Schema(
       required: [true, "Event location is required"],
     },
 
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+
+    isFeatured: {
+      type: Boolean,
+      default: false,
+    },
+
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -40,7 +50,7 @@ const eventSchema = new mongoose.Schema(
 
     eventPhoto: {
       type: String,
-      required: false,
+      required: true,
     },
   },
   { timestamps: true }

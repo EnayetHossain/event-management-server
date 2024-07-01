@@ -8,12 +8,12 @@ router.route("/sign-in").post(signIn);
 router.route("/sign-up").post(
   upload.fields([
     {
-      name: "profilePhoto",
+      name: "profilePhoto", // this name should match the field name in the frontend
       maxCount: 1,
       optional: true,
     },
     {
-      name: "coverPhoto",
+      name: "coverPhoto", // this name should match the field name in the frontend
       maxCount: 1,
       optional: true,
     },
