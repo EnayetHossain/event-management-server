@@ -108,12 +108,11 @@ const getAllEvents = async (req, res) => {
 
   // pagination
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 2;
+  const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
   results.skip(skip).limit(limit);
 
   const events = await results;
-  console.log(events);
 
   if (!events) throw new CustomError("Event Not Found", 404);
 
@@ -181,7 +180,7 @@ const getEventByUserId = async (req, res) => {
 
   // pagination
   const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 2;
+  const limit = Number(req.query.limit) || 10;
   const skip = (page - 1) * limit;
   result.skip(skip).limit(limit);
 
