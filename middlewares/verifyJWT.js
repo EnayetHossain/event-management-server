@@ -15,7 +15,7 @@ const verifyJWT = (req, res, next) => {
   const token = authorization.split(" ")[1];
   // verify the token
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
-    if (err) throw new CustomError("invalid token", 500);
+    if (err) throw new CustomError("invalid token", 401);
 
     req.decoded = decoded;
     next();
