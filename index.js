@@ -13,8 +13,8 @@ const port = process.env.PORT || 5000;
 
 // middlewares
 app.use(cors());
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
+app.use(express.json({ limit: "160kb" }));
+app.use(express.urlencoded({ extended: true, limit: "160kb" }));
 app.use(express.static("public"));
 
 // routes

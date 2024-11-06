@@ -50,7 +50,7 @@ const eventSchema = new mongoose.Schema(
 
     eventPhoto: {
       type: String,
-      required: true,
+      required: [true, "Event photo is required"],
     },
   },
   { timestamps: true }

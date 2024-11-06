@@ -193,8 +193,36 @@ const getEventByUserId = async (req, res) => {
     .json({ status: "Success", data: event, nbHits: event.length });
 };
 
+
+const getSingleEventById = async (req, res) => {
+  const { id } = req.params;
+  const { fields } = req.query;
+
+  const result = Event.findById(id);
+
+  if (fields) {
+    const fieldList = fields.split(",");
+    let fieldString;
+
+    // remove userid field from the response
+    if (fieldList.includes("userId")) {
+      fieldList.pop("userId");
+      fieldString = fieldList.join(" ");
+    }
+
+    fieldString = fieldList.join(" ");
+    result.select(fieldString);
+  } else {
+    result.select("-userId")
+  }
+
+  const event = await result;
+  res.status(200).json({ status: "Success", data: event })
+}
+
 module.exports = {
   addEvent,
   getAllEvents,
   getEventByUserId,
+  getSingleEventById,
 };

@@ -132,8 +132,37 @@ const changePassword = async (req, res) => {
   }
 };
 
+const getUserInfoById = async (req, res) => {
+  const id = req.decoded._id;
+  const { fields } = req.query;
+
+  const result = User.findById(id);
+
+  if (fields) {
+    const fieldList = fields.split(",");
+    let fieldString;
+
+    // exclude the password field if exists in parameter
+    if (fieldList.includes("password")) {
+      fieldList.pop("password");
+      fieldString = fieldList.join(" ");
+    }
+
+    fieldString = fieldList.join(" ");
+
+    result.select(fieldString);
+
+  } else {
+    result.select("-password")
+  }
+  const user = await result;
+
+  res.status(200).json({ status: "Success", data: user })
+}
+
 module.exports = {
   signIn,
   signUp,
   changePassword,
+  getUserInfoById,
 };

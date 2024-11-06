@@ -3,6 +3,7 @@ const {
   addEvent,
   getAllEvents,
   getEventByUserId,
+  getSingleEventById,
 } = require("../controllers/events");
 const verifyJWT = require("../middlewares/verifyJWT");
 const upload = require("../middlewares/multer");
@@ -19,9 +20,10 @@ router.route("/").post(
     },
   ]),
   addEvent
-);
+).get(getAllEvents);
 
-router.route("/").get(getAllEvents);
 router.route("/getEventByUser").get(verifyJWT, getEventByUserId);
+// keep the parameter path at the bottom always
+router.route("/:id").get(getSingleEventById);
 
 module.exports = router;

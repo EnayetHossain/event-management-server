@@ -1,5 +1,5 @@
 const express = require("express");
-const { signIn, signUp, changePassword } = require("../controllers/auth");
+const { signIn, signUp, changePassword, getUserInfoById } = require("../controllers/auth");
 const verifyJWT = require("../middlewares/verifyJWT.js");
 const upload = require("../middlewares/multer.js");
 const router = express.Router();
@@ -21,5 +21,6 @@ router.route("/sign-up").post(
   signUp
 );
 router.route("/change-password").patch(verifyJWT, changePassword);
+router.route("/getUserInfoById").get(verifyJWT, getUserInfoById)
 
 module.exports = router;
