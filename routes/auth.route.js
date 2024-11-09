@@ -1,5 +1,5 @@
 const express = require("express");
-const { signIn, signUp, changePassword, getUserInfoById } = require("../controllers/auth");
+const { signIn, signUp, changePassword, getUserInfoById } = require("../controllers/auth.controller.js");
 const verifyJWT = require("../middlewares/verifyJWT.js");
 const upload = require("../middlewares/multer.js");
 const router = express.Router();

@@ -1,10 +1,10 @@
 require("dotenv").config();
-const User = require("../model/user");
-const CustomError = require("../error/customError");
+const User = require("../model/user.model.js");
+const CustomError = require("../error/customError.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
-const { uploadOnCloudinary } = require("../utils/cloudinary");
+const { uploadOnCloudinary } = require("../utils/cloudinary.js");
 
 // login user
 const signIn = async (req, res) => {

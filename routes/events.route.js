@@ -4,9 +4,9 @@ const {
   getAllEvents,
   getEventByUserId,
   getSingleEventById,
-} = require("../controllers/events");
-const verifyJWT = require("../middlewares/verifyJWT");
-const upload = require("../middlewares/multer");
+} = require("../controllers/events.controller.js");
+const verifyJWT = require("../middlewares/verifyJWT.js");
+const upload = require("../middlewares/multer.js");
 
 const router = express.Router();
 

@@ -2,8 +2,9 @@ require("dotenv").config();
 require("express-async-errors");
 const express = require("express");
 const cors = require("cors");
-const authRouter = require("./routes/auth");
-const eventRouter = require("./routes/events");
+const authRouter = require("./routes/auth.route.js");
+const eventRouter = require("./routes/events.route.js");
+const favoriteRouter = require("./routes/favorite.route.js");
 const connectDB = require("./db/connect");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
@@ -20,6 +21,7 @@ app.use(express.static("public"));
 // routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/events", eventRouter);
+app.use("/api/v1/favorite", favoriteRouter)
 
 // routes
 app.get("/", (req, res) => {

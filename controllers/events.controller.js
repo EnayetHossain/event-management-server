@@ -1,8 +1,8 @@
 require("dotenv").config();
-const Event = require("../model/event");
-const CustomError = require("../error/customError");
+const Event = require("../model/event.model.js");
+const CustomError = require("../error/customError.js");
 const mongoose = require("mongoose");
-const { uploadOnCloudinary } = require("../utils/cloudinary");
+const { uploadOnCloudinary } = require("../utils/cloudinary.js");
 
 // add event
 const addEvent = async (req, res) => {
