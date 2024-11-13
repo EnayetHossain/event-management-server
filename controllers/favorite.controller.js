@@ -35,7 +35,7 @@ const getFavorites = async (req, res) => {
   const {fields, sort} = req.query;
 
   // selective fields
-  // populate is like joins in SQL
+  //NOTE: populate is like joins in SQL
   let result = Favorite.find({userId}).populate({path: "eventId", select: fields ? fields.split(",").join(" ") : ""});
 
   // sorting
