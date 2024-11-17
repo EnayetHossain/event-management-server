@@ -1,6 +1,8 @@
 const express = require("express");
 const {
   addEvent,
+  updateEvent,
+  deleteEvent,
   getAllEvents,
   getEventByUserId,
   getSingleEventById,
@@ -23,7 +25,17 @@ router.route("/").post(
 ).get(getAllEvents);
 
 router.route("/getEventByUser").get(verifyJWT, getEventByUserId);
-// keep the parameter path at the bottom always
-router.route("/:id").get(getSingleEventById);
+//NOTE: keep the parameter path at the bottom ALWAYS
+router.route("/:id").get(getSingleEventById).patch(
+  verifyJWT,
+  upload.fields([
+    {
+      name: "eventPhoto", //NOTE: this name should match the field name in the frontend
+      maxCount: 1,
+      optional: true,
+    },
+  ]),
+  updateEvent
+).delete(verifyJWT, deleteEvent);
 
 module.exports = router;

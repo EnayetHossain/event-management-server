@@ -1,7 +1,6 @@
 require("dotenv").config();
 const Event = require("../model/event.model.js");
 const CustomError = require("../error/customError.js");
-const mongoose = require("mongoose");
 const { uploadOnCloudinary } = require("../utils/cloudinary.js");
 
 // add event
@@ -50,6 +49,45 @@ const addEvent = async (req, res) => {
     res.status(500).json({ status: "Failed", error });
   }
 };
+
+const updateEvent = async (req, res) => {
+  const { eventTitle, eventDescription, eventDate, ticketPrice, totalTickets, eventLocation } = req.body;
+  const { id } = req.params;
+
+  const event = await Event.findById(id).exec();
+  if (!event) return res.status(404).json({ status: "Failed", error: "Event not found" });
+
+  const update = {};
+
+  if (eventTitle) update.title = eventTitle;
+  if (eventDescription) update.description = eventDescription;
+  if (eventDate) update.eventDate = eventDate;
+  if (ticketPrice) update.ticketPrice = ticketPrice;
+  if (totalTickets) update.totalTickets = totalTickets;
+  if (eventLocation) update.eventLocation = eventLocation;
+
+  const eventPhotoPath = req.files?.eventPhoto?.[0].path;
+  if (eventPhotoPath) {
+    const eventPhoto = await uploadOnCloudinary(eventPhotoPath);
+    update.eventPhoto = eventPhoto.url;
+  }
+
+  const filter = { _id: id };
+
+  const doc = await Event.findOneAndUpdate(filter, update, { new: true }).exec();
+
+  res.status(200).json({ status: "Success", event: doc });
+}
+
+const deleteEvent = async (req, res) => {
+  const { id } = req.params;
+
+  const event = await Event.findById(id).exec();
+  if (!event) throw new CustomError("Event not Found", 404);
+
+  const result = await Event.deleteOne({ _id: id });
+  res.status(200).json({ status: "Success", event: result });
+}
 
 const getAllEvents = async (req, res) => {
   const { isActive, isFeatured, title, sort, fields, numericFilters } =
@@ -222,6 +260,8 @@ const getSingleEventById = async (req, res) => {
 
 module.exports = {
   addEvent,
+  updateEvent,
+  deleteEvent,
   getAllEvents,
   getEventByUserId,
   getSingleEventById,
