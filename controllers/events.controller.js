@@ -86,7 +86,7 @@ const deleteEvent = async (req, res) => {
   if (!event) throw new CustomError("Event not Found", 404);
 
   const result = await Event.deleteOne({ _id: id });
-  res.status(200).json({ status: "Success", event: result });
+  res.status(200).json({ status: "Success", data: result });
 }
 
 const getAllEvents = async (req, res) => {
@@ -126,7 +126,6 @@ const getAllEvents = async (req, res) => {
     });
   }
 
-  // console.log(queryObject);
 
   let results = Event.find(queryObject); // get all events.
 

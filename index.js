@@ -5,6 +5,7 @@ const cors = require("cors");
 const authRouter = require("./routes/auth.route.js");
 const eventRouter = require("./routes/events.route.js");
 const favoriteRouter = require("./routes/favorite.route.js");
+const paymentRouter = require("./routes/payment.route.js");
 const connectDB = require("./db/connect");
 const notFound = require("./middlewares/notFound");
 const errorHandler = require("./middlewares/errorHandler");
@@ -21,10 +22,11 @@ app.use(express.static("public"));
 // routes
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/events", eventRouter);
-app.use("/api/v1/favorite", favoriteRouter)
+app.use("/api/v1/favorite", favoriteRouter);
+app.use("/api/v1/payment", paymentRouter);
 
 // routes
-app.get("/", (req, res) => {
+app.get("/", (_, res) => {
   res.send("server running");
 });
 

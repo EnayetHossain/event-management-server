@@ -25,6 +25,7 @@ router.route("/").post(
 ).get(getAllEvents);
 
 router.route("/getEventByUser").get(verifyJWT, getEventByUserId);
+
 //NOTE: keep the parameter path at the bottom ALWAYS
 router.route("/:id").get(getSingleEventById).patch(
   verifyJWT,
