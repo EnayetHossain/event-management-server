@@ -6,6 +6,8 @@ const {
   getAllEvents,
   getEventByUserId,
   getSingleEventById,
+  getFeaturedEvent,
+  removeFeaturedEvent
 } = require("../controllers/events.controller.js");
 const verifyJWT = require("../middlewares/verifyJWT.js");
 const upload = require("../middlewares/multer.js");
@@ -25,6 +27,7 @@ router.route("/").post(
 ).get(getAllEvents);
 
 router.route("/getEventByUser").get(verifyJWT, getEventByUserId);
+router.route("/featured").get(getFeaturedEvent);
 
 //NOTE: keep the parameter path at the bottom ALWAYS
 router.route("/:id").get(getSingleEventById).patch(
@@ -38,5 +41,6 @@ router.route("/:id").get(getSingleEventById).patch(
   ]),
   updateEvent
 ).delete(verifyJWT, deleteEvent);
+router.route("/featured/:id").patch(removeFeaturedEvent);
 
 module.exports = router;

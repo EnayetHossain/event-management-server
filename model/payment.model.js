@@ -7,7 +7,7 @@ const paymentSchema = new mongoose.Schema({
     required: [true, "User id is required"],
   },
 
-  evnetId: {
+  eventId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Event",
     required: [true, "eventId is required"]

@@ -5,6 +5,7 @@ const Payment = require("../model/payment.model.js");
 const CustomError = require("../error/customError");
 const { ObjectId } = require("mongodb");
 const axios = require("axios");
+const PDFDocument = require('pdfkit');
 
 // accept stripe payments
 const acceptPayment = async (req, res) => {
@@ -27,7 +28,7 @@ const acceptPayment = async (req, res) => {
   // create a payment session in stripe 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
-    success_url: "http://localhost:3000/success",
+    success_url: "http://localhost:3000/success?session_id={CHECKOUT_SESSION_ID}&gateway=stripe",
     cancel_url: "http://localhost:3000/cancel",
     line_items: [
       {
@@ -57,7 +58,7 @@ const acceptPayment = async (req, res) => {
   // create payment record
   const paymentRecord = new Payment({
     userId,
-    evnetId: id,
+    eventId: id,
     transactionId: session.id,
     isPaid: false,
     paymentGetway: "stripe",
@@ -103,7 +104,7 @@ const verifyPayment = async (req, res) => {
   payment.isPaid = true;
   await payment.save();
 
-  res.status(200).json({ status: "Sucess", data: payment });
+  res.status(200).json({ status: "Success", data: payment });
 }
 
 const acceptPaymentWithSSL = async (req, res) => {
@@ -136,7 +137,7 @@ const acceptPaymentWithSSL = async (req, res) => {
     total_amount: event.ticketPrice * numberOfTickets,
     currency: 'BDT',
     tran_id: transactionId, // use unique tran_id for each api call
-    success_url: 'http://localhost:3000/success',
+    success_url: `http://localhost:5000/api/v1/payment/ssl-success`,
     fail_url: 'http://localhost:3000/fail',
     cancel_url: 'http://localhost:3000/cancel',
     ipn_url: 'http://localhost:3000/ipn',
@@ -171,7 +172,7 @@ const acceptPaymentWithSSL = async (req, res) => {
     // create payment record
     const paymentData = {
       userId,
-      evnetId: id,
+      eventId: id,
       isPaid: false,
       transactionId: transactionId,
       paymentGetway: "sslcommerz",
@@ -185,9 +186,48 @@ const acceptPaymentWithSSL = async (req, res) => {
     Payment.create(paymentData);
 
     //res.status(303).json({ urL: GatewayPageURL });
-    res.status(200).json({ url: GatewayPageURL })
+    res.status(200).json({ url: GatewayPageURL, tranId: transactionId })
   });
 }
+
+const sslSuccessHandler = async (req, res) => {
+  const { val_id } = req.body;
+
+  if (!val_id) {
+    return res.status(400).json({ error: "Invalid request: val_id is required" });
+  }
+
+  try {
+    const validationURL = "https://sandbox.sslcommerz.com/validator/api/validationserverAPI.php";
+    const response = await axios.get(validationURL, {
+      params: {
+        val_id,
+        store_id: process.env.STORE_ID,
+        store_passwd: process.env.STORE_PASSWORD,
+      },
+    });
+
+    const { status, tran_id, payment_type } = response.data;
+
+    if (status === "VALID") {
+      const payment = await Payment.findOne({ transactionId: tran_id });
+      if (payment) {
+        payment.isPaid = true;
+        payment.paymentMethod = payment_type || "unknown";
+        await payment.save();
+      } else {
+        return res.status(404).json({ error: "Payment not found" });
+      }
+
+      // Redirect to frontend success page
+      return res.redirect(`http://localhost:3000/success?session_id=${tran_id}`);
+    }
+
+    res.redirect(`http://localhost:3000/fail`);
+  } catch (error) {
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
 
 const verifySSLPayment = async (req, res) => {
   const { transactionId } = req.params;
@@ -215,6 +255,7 @@ const verifySSLPayment = async (req, res) => {
 
     // transaction information
     const { status, tran_id, payment_type } = response.data;
+    console.log(response.data);
 
     // check if payment status is valid
     if (status !== "VALID") throw new CustomError("Payment verification failed", 400);
@@ -232,9 +273,57 @@ const verifySSLPayment = async (req, res) => {
   }
 }
 
+const generateTicketPDF = async (req, res) => {
+  const { sessionId } = req.params;
+  console.warn("Session ID:", sessionId);
+
+  try {
+    const payment = await Payment.findOne({ transactionId: sessionId });
+
+    if (!payment || !payment.isPaid) {
+      throw new CustomError("Payment not found or invalid transaction ID", 400);
+    }
+
+    const event = await Event.findById(payment.eventId);
+
+    if (!event) {
+      throw new CustomError("Event not found", 404);
+    }
+
+    const pdfDoc = new PDFDocument();
+    const filename = `tickets-${sessionId}.pdf`;
+
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.setHeader("Content-Type", "application/pdf");
+
+    pdfDoc.pipe(res);
+
+    pdfDoc.fontSize(24).text(`Ticket for ${event.title}`, { align: "center" });
+    pdfDoc.moveDown();
+
+    for (let i = 1; i <= payment.numberOfTickets; i++) {
+      pdfDoc.fontSize(18).text(`Ticket #${i}`);
+      pdfDoc.fontSize(14).text(`Event: ${event.title}`);
+      pdfDoc.text(`Date: ${event.eventDate}`);
+      pdfDoc.text(`Location: ${event.eventLocation}`);
+      pdfDoc.text(`Transaction ID: ${sessionId}`);
+      pdfDoc.text(`Price: ${event.ticketPrice}`);
+      pdfDoc.addPage();
+    }
+
+    console.log("PDF ready")
+    pdfDoc.end();
+  } catch (error) {
+    console.error("Error generating ticket PDF:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   acceptPayment,
   verifyPayment,
   acceptPaymentWithSSL,
-  verifySSLPayment
+  verifySSLPayment,
+  sslSuccessHandler,
+  generateTicketPDF
 }

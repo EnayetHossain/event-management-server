@@ -2,6 +2,7 @@ require("dotenv").config();
 const Event = require("../model/event.model.js");
 const CustomError = require("../error/customError.js");
 const { uploadOnCloudinary } = require("../utils/cloudinary.js");
+const cron = require('node-cron');
 
 // add event
 const addEvent = async (req, res) => {
@@ -257,6 +258,47 @@ const getSingleEventById = async (req, res) => {
   res.status(200).json({ status: "Success", data: event })
 }
 
+const getFeaturedEvent = async (req, res) => {
+  const { fields } = req.query;
+  const event = Event.findOne({ isFeatured: true });
+
+  if (fields) {
+    const fieldList = fields.split(",");
+    let fieldString;
+
+    if (fieldList.includes("userId")) {
+      fieldList.pop("userId");
+      fieldString = fieldList.join(" ");
+    }
+
+    fieldString = fieldList.join(" ");
+    event.select(fieldString)
+  } else {
+    event.select("-userId")
+  }
+
+  const result = await event;
+
+  if (!result) throw new CustomError("No Featured event found", 404);
+  res.status(200).json({ status: "Success", data: result })
+}
+
+const removeFeaturedEvent = async (req, res) => {
+  const { id } = req.params;
+  const { isFeatured } = req.body;
+  const event = await Event.findByIdAndUpdate(id, { isFeatured }, { new: true });
+  res.status(200).json({ status: "Success", data: event });
+}
+
+cron.schedule("*/5 * * * *", async () => {
+  try {
+    const now = new Date();
+    await Event.updateMany({ isFeatured: true, eventDate: { $lt: now } }, { isFeatured: false })
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 module.exports = {
   addEvent,
   updateEvent,
@@ -264,4 +306,6 @@ module.exports = {
   getAllEvents,
   getEventByUserId,
   getSingleEventById,
+  getFeaturedEvent,
+  removeFeaturedEvent
 };
